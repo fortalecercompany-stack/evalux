@@ -8,7 +8,8 @@ function vEstInicio(){const s=est(),o={'en curso':0,programado:1,cerrado:2},xs=e
  <div class="bento">${tile('exam','c2','Exámenes asignados',xs.length)}${tile('trend','c3','Su promedio',prom!=null?nota1(prom):'—',prom!=null?'nivel '+NIV[nivel(prom)].toLowerCase():'')}${tile('checkc','cok','Aprobados',notas.filter(n=>n>=S.cfg.aprueba).length,'de '+notas.length+' calificado'+(notas.length===1?'':'s'))}${tile('clock','c1','Próximo',px?`<span style="font-size:1.05rem">${esc(fmt(px.apertura))}</span>`:'—',px?esc(px.titulo):'')}
  ${av?`<div class="card s12 row" style="flex-wrap:nowrap;gap:14px;border-left:6px solid var(--coral)"><span class="chipi cc">${ic('mega')}</span><div style="flex:1;min-width:0"><b>${esc(av.titulo)}</b><p class="small muted">${esc(av.texto)}</p></div><button class="btn sm ghost" data-act="nav" data-v="avisos">Ver avisos</button></div>`:''}</div>
  <div class="grid2">${xs.map(e=>{const st=estadoExamen(e),it=miIntento(e),dd=new Date(e.apertura);let right='',acc='';
-  if(it&&it.nota!=null){right=ring(it.nota/5,NIVCOL[nivel(it.nota)],84,10,nota1(it.nota),'de 5,0');acc=st==='cerrado'?`<button class="btn sm pri" data-act="est-rev" data-id="${e.id}">${ic('eye','sm')}Ver respuestas</button>${lvTag(it.nota)}`:`<span class="small muted">${ic('clock','sm')} Respuestas correctas a las ${hora(cierre(e))}</span>`}
+  const finTodos=e.finTodos?new Date(e.finTodos):cierre(e);
+  if(it&&it.nota!=null){right=notaRoja(it.nota,86,'',it.nota>=S.cfg.aprueba);acc=ahora()>=finTodos?`<button class="btn sm pri" data-act="est-rev" data-id="${e.id}">${ic('eye','sm')}Ver respuestas</button>${lvTag(it.nota)}`:`<span class="small muted">${ic('clock','sm')} Respuestas correctas a las ${hora(finTodos)}</span>`}
   else if(it&&it.estado==='sospecha')acc='<span class="pill p-bad"><i></i>Cerrado por sospecha · hable con su docente</span>';
   else if(st==='en curso')acc=`<button class="btn sm hot" data-act="est-start" data-id="${e.id}">${ic('arrowR','sm')}${it?'Continuar examen':'Presentar examen'}</button>`;
   else if(st==='programado')acc=`<span class="pill p-info"><i></i>Abre ${esc(fmt(e.apertura))}</span>`;else acc='<span class="pill p-mute"><i></i>No lo presentó</span>';
@@ -74,7 +75,8 @@ function marcarGuardado(){const x=S.exam;if(!x||!x.intento)return;guardarLocal(x
 async function enviarRespuestas(){const x=S.exam;if(!x||x.fase!=='examen'||x.enviando)return;x.enviando=true;
  try{while(x.incPend.length){const t=x.incPend[0];const r=await rpc('registrar_incidente',{p_intento:x.intento,p_tipo:t,p_resp:x.resp});x.incPend.shift();if(r&&r.estado==='sospecha'){x.fase='sospecha';salirPantalla();render();return}}
   const n=x.e.preg.filter(p=>respondida(p,x.resp[p.id])).length;
-  const st=await rpc('guardar_respuestas',{p_intento:x.intento,p_resp:x.resp,p_marcadas:x.flags,p_respondidas:n});
+  const g=await rpc('guardar_respuestas',{p_intento:x.intento,p_resp:x.resp,p_marcadas:x.flags,p_respondidas:n}),st=g&&typeof g==='object'?g.estado:g;
+  if(g&&g.cierre){const nc=new Date(g.cierre);if(+nc>+x.cierre)toast('Su docente le dio más tiempo','clock');x.cierre=nc}
   x.pend=false;x.guardado=new Date();
   if(st==='sospecha'){x.fase='sospecha';salirPantalla();render();return}
   if(st==='entregado'){await entregar(true);return}
@@ -90,15 +92,15 @@ async function entregar(auto){const x=S.exam;if(!x||x.entregando)return;x.entreg
   S.resSel={id:x.e.id,auto,nota:r.nota==null?null:+r.nota,buenas:r.buenas,total:r.total,estado:r.estado};S.exam=null;salirPantalla();await refrescar('resultado')}
  catch(e){x.entregando=false;x.pend=true;pintarRed();
   modal({title:'No se pudo entregar',size:'sm',icon:['wifi','cbad'],body:`<p>${esc(mensaje(e))}</p><p>Sus respuestas están guardadas en este equipo. Revise la conexión y pulse <b>Entregar</b> otra vez.</p><p class="small muted">Si el tiempo se acaba sin conexión, Evalux entrega sola la última copia que alcanzó a guardar.</p>`,foot:'<button class="btn pri" data-act="close">Entendido</button>'})}}
-function vEstResultado(){const r=S.resSel,e=S.examenes.find(x=>x.id===r.id)||{titulo:'',asig:''};
+function vEstResultado(){const r=S.resSel,e=S.examenes.find(x=>x.id===r.id)||{titulo:'',asig:''};const finR=e.finTodos?new Date(e.finTodos):e.apertura?cierre(e):null;
  if(r.estado==='sospecha')return `<div class="card empty">${ic('alert','lg')}<b>Su examen se cerró por sospecha de fraude.</b><span class="small">Hable con su docente.</span><button class="btn pri" data-act="nav" data-v="inicio">Ir a mis exámenes</button></div>`;
  const nota=r.nota||0,ok=nota>=S.cfg.aprueba;
- return `<section class="card" style="position:relative;overflow:hidden;display:flex;gap:28px;align-items:center;flex-wrap:wrap;padding:30px">${ok?`<div class="burst" aria-hidden="true">${Array.from({length:24},(_,i)=>`<i style="left:${(i*47)%100}%;top:${(i*13)%30}%;background:${PALHEX[i%6]};animation-delay:${(i%7)*.08}s"></i>`).join('')}</div>`:''}
- ${ring(nota/5,NIVCOL[nivel(nota)],176,16,nota1(nota),'de 5,0')}
- <div style="display:flex;flex-direction:column;gap:10px;flex:1 1 260px;min-width:0"><div class="eyebrow">${esc(e.asig)}</div><h1>${ok?'¡Aprobó el examen!':'Examen entregado'}</h1><p class="muted">${esc(e.titulo)}${r.auto?' · El tiempo terminó y su examen se entregó automáticamente.':''}</p>
- <div class="row">${lvTag(nota)}${r.total?`<span class="pill p-info"><i></i>${r.buenas} de ${r.total} completamente correctas</span>`:''}</div></div></section>
- ${e.apertura&&estadoExamen(e)!=='cerrado'?`<div class="card row" style="background:var(--warn-soft);border-color:transparent;color:var(--warn);flex-wrap:nowrap;gap:14px;box-shadow:none">${ic('clock')}<span><b>Las respuestas correctas se mostrarán a las ${hora(cierre(e))},</b> cuando termine el examen para todos sus compañeros.</span></div>`:''}
- <div class="row"><button class="btn pri" data-act="nav" data-v="inicio">Ir a mis exámenes</button>${e.apertura&&estadoExamen(e)==='cerrado'?`<button class="btn" data-act="est-rev" data-id="${e.id}">${ic('eye','sm')}Ver respuestas</button>`:''}</div>`}
+ return `<section class="hero">${ok?`<div class="burst" aria-hidden="true">${Array.from({length:24},(_,i)=>`<i style="left:${(i*47)%100}%;top:${(i*13)%30}%;background:${PALHEX[i%6]};animation-delay:${(i%7)*.08}s"></i>`).join('')}</div>`:''}<i class="blob b1"></i><i class="blob b2"></i>
+ <div class="hero-in"><div class="hero-t"><span class="eyebrow">${esc(e.asig)}</span><h1>${ok?'¡Aprobó el examen!':'Examen entregado'}</h1><p>${esc(e.titulo)}${r.auto?' · El tiempo terminó y su examen se entregó automáticamente.':''}</p>
+ <div class="acts">${lvTag(nota)}${r.total?`<span class="pill p-info"><i></i>${r.buenas} de ${r.total} completamente correctas</span>`:''}</div></div>
+ <div class="hoja-nota">${notaRoja(nota,170,'de 5,0',ok)}</div></div></section>
+ ${finR&&ahora()<finR?`<div class="card row" style="background:var(--warn-soft);border-color:transparent;color:var(--warn);flex-wrap:nowrap;gap:14px;box-shadow:none">${ic('clock')}<span><b>Las respuestas correctas se mostrarán a las ${hora(finR)},</b> cuando termine el examen para todos sus compañeros.</span></div>`:''}
+ <div class="row"><button class="btn pri" data-act="nav" data-v="inicio">Ir a mis exámenes</button>${finR&&ahora()>=finR?`<button class="btn" data-act="est-rev" data-id="${e.id}">${ic('eye','sm')}Ver respuestas</button>`:''}</div>`}
 async function abrirRevision(id,btn){await ocupado(btn,async()=>{const r=await rpc('revision_examen',{p_examen:id});S.rev={...r,nota:+r.nota,preg:r.preguntas.map(aPregunta)};go('revision')})}
 function vRevision(){const e=S.rev;if(!e)return vEstInicio();const ans=e.eval||{};
  return `${hero('Revisión · '+esc(e.asig),esc(e.titulo),`Nota <b>${nota1(e.nota)}</b> · ${e.buenas} de ${e.total} preguntas completamente correctas`,`<button class="btn" data-act="nav" data-v="inicio">Volver</button>`,'checkc')}

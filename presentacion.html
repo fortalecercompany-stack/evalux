@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evalux · Exámenes en línea para su institución</title>
+<meta name="description" content="Evalux: exámenes en línea de selección múltiple, completar y relacionar, calificados al instante, con antifraude, reportes y la marca de su institución.">
+<meta name="theme-color" content="#2B3A8C">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='14' fill='%232B3A8C'/%3E%3Crect x='12' y='12' width='19' height='5' rx='2.5' fill='%23fff'/%3E%3Crect x='12' y='21.5' width='11' height='5' rx='2.5' fill='%23fff'/%3E%3Crect x='12' y='31' width='19' height='5' rx='2.5' fill='%23fff'/%3E%3Cpath d='M26 25l4 4 8-9' fill='none' stroke='%23FF8A63' stroke-width='4.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Página de presentación de Evalux 1.2: mismo lenguaje que el sistema
+   (franja índigo con borde en curva, tarjetas que suben sobre ella, botones en píldora, coral como acento).
+   Lo memorable: una pregunta de verdad que el visitante responde y ve corregida al instante. */
+:root{--bg:#F2F3FA;--surface:#fff;--surface-2:#F7F8FC;--ink:#141833;--muted:#5C6283;--line:#DCE0EE;--brand:#2B3A8C;--brand-2:#1C2766;--brand-hi:#4556B8;--brand-soft:#E4E7F7;
+ --coral:#E0562F;--coral-ink:#A33A1B;--coral-soft:#FCE6DF;--coral-light:#FF9A7A;--ok:#1F7A4D;--ok-soft:#DFF3E8;
+ --a1:#2F6FB7;--a1s:#E3EDF8;--a2:#D0672A;--a2s:#FBEBE1;--a3:#178A6E;--a3s:#DFF1EB;--a4:#7048C8;--a4s:#ECE6F8;
+ --shadow:0 1px 2px rgba(20,24,51,.05),0 8px 24px rgba(20,24,51,.07);--shadow-up:0 4px 10px rgba(20,24,51,.06),0 28px 60px rgba(28,39,102,.2);
+ --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--display:"Fraunces",Georgia,serif;--ease:cubic-bezier(.2,.8,.2,1)}
+@media (prefers-color-scheme:dark){:root{--bg:#0B0E1F;--surface:#151A33;--surface-2:#1A2040;--ink:#E9EBF7;--muted:#A3A9CA;--line:#2E3560;--brand-soft:#262E5C;--coral-ink:#F7A68B;--coral-soft:#3D2019;--ok:#6FCF97;--ok-soft:#173326;
+ --a1:#6F9FDC;--a1s:#1B2A45;--a2:#E08B57;--a2s:#3A2418;--a3:#43B597;--a3s:#15332B;--a4:#9A80E0;--a4s:#2A2148;color-scheme:dark}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;overflow-x:clip;background:var(--bg);color:var(--ink);font:17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;
+ background-image:radial-gradient(circle at 1px 1px,rgba(20,24,51,.06) 1px,transparent 0);background-size:22px 22px}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.12;margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+a{color:inherit}
+code{font-size:.92em;background:var(--brand-soft);padding:1px 6px;border-radius:6px}
+:focus-visible{outline:3px solid var(--coral);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1160px;margin:0 auto;padding-inline:20px}
+/* barra: transparente sobre la franja, clara al bajar */
+header.nav{position:sticky;top:0;z-index:20;height:70px;color:#fff;transition:background .35s,box-shadow .35s,color .35s}
+html.bajo header.nav{background:rgba(255,255,255,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 6px 24px rgba(20,24,51,.08);color:var(--ink)}
+@media (prefers-color-scheme:dark){html.bajo header.nav{background:rgba(21,26,51,.94)}}
+header.nav .wrap{display:flex;align-items:center;gap:22px;height:100%}
+.logo{display:flex;align-items:center;gap:10px;font:800 1.35rem var(--sans);text-decoration:none;letter-spacing:-.02em}
+.logo b{color:var(--coral-light)}html.bajo .logo b{color:var(--coral)}
+.nav .sp{flex:1}
+.nav a.l{text-decoration:none;font-weight:700;font-size:.95rem;opacity:.8;padding:8px 4px;background:linear-gradient(var(--coral),var(--coral)) 0 100%/0 2px no-repeat;transition:background-size .3s var(--ease),opacity .2s}
+.nav a.l:hover{opacity:1;background-size:100% 2px}
+@media (max-width:760px){.nav a.l{display:none}}
+.btn{position:relative;overflow:hidden;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 22px;border-radius:999px;font:700 1rem var(--sans);text-decoration:none;border:1.5px solid currentColor;color:inherit;background:transparent;cursor:pointer;transition:transform .25s var(--ease),box-shadow .25s,background .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn .fl{transition:transform .3s var(--ease)}.btn:hover .fl{transform:translateX(4px)}
+.btn.pri{background:linear-gradient(135deg,#F06A42,var(--coral) 55%,#C9481F);border-color:transparent;color:#fff;box-shadow:0 10px 26px rgba(224,86,47,.35)}
+.btn.pri::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.3) 48%,transparent 66%);transform:translateX(-120%);transition:transform .7s var(--ease)}
+.btn.pri:hover::after{transform:translateX(120%)}
+.btn.vid{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);color:#fff;backdrop-filter:blur(6px)}
+.btn.vid:hover{background:rgba(255,255,255,.2)}
+.btn.sm{min-height:40px;padding:6px 16px;font-size:.92rem}
+/* franja de portada */
+.portada{position:relative;isolation:isolate;overflow:hidden;color:#fff;margin-top:-70px;padding:calc(70px + 56px) 0 150px;
+ background:linear-gradient(125deg,#4556B8 0%,#2B3A8C 42%,#1C2766 100%);
+ -webkit-mask:linear-gradient(#000,#000) top/100% calc(100% - 58px) no-repeat,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 0h1440v34C1200 62 960 58 720 36S240 6 0 32z'/%3E%3C/svg%3E") bottom/100% 60px no-repeat;
+ mask:linear-gradient(#000,#000) top/100% calc(100% - 58px) no-repeat,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 0h1440v34C1200 62 960 58 720 36S240 6 0 32z'/%3E%3C/svg%3E") bottom/100% 60px no-repeat}
+.portada::before{content:"";position:absolute;inset:0;z-index:-1;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.12) 1px,transparent 0);background-size:18px 18px}
+.blob{position:absolute;border-radius:50%;z-index:-1;filter:blur(8px);pointer-events:none}
+.blob.b1{width:620px;height:620px;right:-160px;top:-240px;background:radial-gradient(circle,rgba(224,86,47,.5),transparent 65%)}
+.blob.b2{width:520px;height:520px;left:-200px;bottom:-280px;background:radial-gradient(circle,rgba(140,155,240,.45),transparent 65%)}
+@media (prefers-reduced-motion:no-preference){.blob.b1{animation:f1 18s ease-in-out infinite alternate}.blob.b2{animation:f2 22s ease-in-out infinite alternate}}
+@keyframes f1{to{transform:translate(-120px,80px) scale(1.15)}}@keyframes f2{to{transform:translate(140px,-60px) scale(1.1)}}
+.portada .wrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:center}
+.chipe{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#FFD2C4;font-weight:700;font-size:.9rem}
+.chipe::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--coral-light);box-shadow:0 0 0 4px rgba(255,154,122,.25)}
+.portada h1{font-size:clamp(2.4rem,5.4vw,4rem);margin-top:18px}
+.portada p.lead{font-size:1.18rem;color:#D3D8F5;max-width:48ch;margin-top:18px}
+.portada .acts{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.portada .nota{margin-top:18px;font-size:.95rem;color:#B8BFE8}
+/* escena: escudo con tarjetas flotando */
+.escena{position:relative;justify-self:center;width:min(440px,100%);aspect-ratio:1/1;display:grid;place-items:center}
+.escena .escudo{width:62%;filter:drop-shadow(0 22px 44px rgba(0,0,0,.35));overflow:visible}
+.flota{position:absolute;background:#fff;color:#141833;border-radius:18px;padding:12px 16px;box-shadow:0 18px 40px rgba(0,0,0,.25);display:flex;align-items:center;gap:12px;font-size:.88rem;line-height:1.3}
+.flota b{display:block;font-size:1rem}.flota small{color:#5C6283}
+.flota i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-style:normal;font-weight:800;flex:none}
+.flota.f1{left:-6%;top:12%}.flota.f1 i{background:#DFF3E8;color:#1F7A4D}
+.flota.f2{right:-8%;top:44%}.flota.f2 i{background:#FCE6DF;color:#A33A1B;font-family:var(--display);font-size:1.05rem}
+.flota.f3{left:4%;bottom:6%}.flota.f3 i{background:#E4E7F7;color:#2B3A8C}
+.vivo{width:9px;height:9px;border-radius:50%;background:#1F7A4D;display:inline-block;margin-right:4px}
+@media (prefers-reduced-motion:no-preference){
+ .escena .escudo{animation:levita 7s ease-in-out infinite}.escena .g1{transform-origin:110px 120px;animation:giro 40s linear infinite}.escena .g2{transform-origin:110px 120px;animation:giro 60s linear infinite reverse}
+ .flota.f1{animation:levita 6s ease-in-out infinite}.flota.f2{animation:levita 7s 1s ease-in-out infinite}.flota.f3{animation:levita 8s .5s ease-in-out infinite}
+ .vivo{animation:parpadea 1.4s infinite}
+ .portada .wrap>div:first-child>*{animation:sube .8s var(--ease) backwards}.portada .wrap>div:first-child>:nth-child(2){animation-delay:.08s}.portada .wrap>div:first-child>:nth-child(3){animation-delay:.16s}.portada .wrap>div:first-child>:nth-child(4){animation-delay:.24s}
+ .rv{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease),transform .7s var(--ease)}.rv.vis{opacity:1;transform:none}}
+@keyframes levita{50%{transform:translateY(-10px)}}@keyframes giro{to{transform:rotate(360deg)}}@keyframes parpadea{50%{opacity:.25}}@keyframes sube{from{opacity:0;transform:translateY(24px)}}
+@media (max-width:900px){.portada .wrap{grid-template-columns:minmax(0,1fr)}.escena{width:min(340px,92%)}.portada{padding-bottom:130px}}
+section{padding-block:64px}
+.sec-h{max-width:64ch;display:flex;flex-direction:column;gap:10px;margin-bottom:34px}
+.sec-h .chipo{align-self:flex-start;padding:4px 12px;border-radius:999px;background:var(--coral-soft);color:var(--coral-ink);font-weight:800;font-size:.82rem}
+.sec-h h2{font-size:clamp(1.8rem,3.6vw,2.6rem)}
+.sec-h p{color:var(--muted);font-size:1.08rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow)}
+/* pruébelo: sube sobre la franja */
+#pruebe{padding-top:0;margin-top:-110px;position:relative;z-index:2}
+.prueba{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:0;overflow:hidden;box-shadow:var(--shadow-up)}
+@media (max-width:860px){.prueba{grid-template-columns:minmax(0,1fr)}}
+.preg{padding:30px;display:flex;flex-direction:column;gap:16px;border-top:6px solid var(--brand)}
+.preg .tit{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.9rem;font-weight:700}
+.preg .tit span{background:var(--a1s);color:var(--a1);padding:4px 10px;border-radius:999px}
+.preg .q{font-size:1.2rem;font-weight:600}
+.opc{display:grid;gap:10px}
+.opc button{all:unset;cursor:pointer;display:flex;gap:14px;align-items:center;padding:12px 16px;border:2px solid var(--line);border-radius:18px;font-size:1.1rem;transition:border-color .2s,background .2s,transform .25s var(--ease)}
+.opc button:hover{border-color:var(--brand);transform:translateX(4px)}
+.opc button:focus-visible{outline:3px solid var(--coral)}
+.opc button span{width:38px;height:38px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center;font-weight:800;color:var(--muted);flex:none;transition:.25s}
+.opc button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.opc button.bien{border-color:var(--ok);background:var(--ok-soft)}
+.opc button.bien span{background:var(--ok);border-color:var(--ok);color:#fff}
+.opc button.mal{border-color:var(--coral)}
+.veredicto{min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;color:var(--muted);padding:26px;background:var(--surface-2);border-left:1px solid var(--line)}
+.circulo{position:relative;width:160px;height:136px;display:grid;place-items:center}
+.circulo svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.circulo path{fill:none;stroke:var(--coral);stroke-width:3;stroke-linecap:round}
+.circulo b{font:700 2.8rem var(--display);color:var(--coral-ink)}
+@media (prefers-reduced-motion:no-preference){.circulo path{stroke-dasharray:340;stroke-dashoffset:340;animation:trazar .7s ease-out forwards}@keyframes trazar{to{stroke-dashoffset:0}}}
+/* roles */
+.roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:860px){.roles{grid-template-columns:minmax(0,1fr)}}
+.rol{padding:26px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;transition:transform .35s var(--ease),box-shadow .35s}
+.rol:hover{transform:translateY(-5px);box-shadow:var(--shadow-up)}
+.rol::after{content:"";position:absolute;left:26px;bottom:0;height:4px;width:44px;border-radius:4px 4px 0 0;background:var(--rc);transition:width .5s var(--ease)}
+.rol:hover::after{width:calc(100% - 52px)}
+.rol .ic{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:var(--rs);color:var(--rc)}
+.rol h3{font-size:1.35rem}
+.rol ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:var(--muted)}
+/* funciones */
+.funs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:16px}
+.fun{padding:22px;display:flex;gap:16px;align-items:flex-start;transition:transform .35s var(--ease),box-shadow .35s,border-color .35s}
+.fun:hover{transform:translateY(-4px);box-shadow:var(--shadow-up);border-color:transparent}
+.fun .n{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:none;background:var(--brand-soft);color:var(--brand);transition:transform .4s var(--ease),background .3s,color .3s}
+.fun:hover .n{transform:rotate(-8deg) scale(1.08);background:var(--coral);color:#fff}
+.fun h3{font-size:1.1rem}.fun p{color:var(--muted);font-size:.97rem;margin-top:4px}
+/* preguntas frecuentes, desplegables */
+.faq{max-width:820px;display:flex;flex-direction:column;gap:12px}
+.faq details{background:var(--surface);border:1px solid var(--line);border-radius:20px;transition:box-shadow .3s,border-color .3s}
+.faq details[open]{box-shadow:var(--shadow-up);border-color:transparent}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 22px;font-weight:700;font-size:1.05rem}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary i{width:30px;height:30px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-style:normal;flex:none;transition:transform .35s var(--ease),background .3s,color .3s}
+.faq details[open] summary i{transform:rotate(45deg);background:var(--coral);color:#fff}
+.faq .r{padding:0 22px 20px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.faq details[open] .r{animation:sube .4s var(--ease)}}
+/* requisitos y cierre */
+.req{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}
+.req div{padding:22px;display:flex;flex-direction:column;gap:4px}
+.req b{font:700 1.25rem var(--display)}
+.req span{color:var(--muted)}
+.final{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(125deg,#4556B8,#2B3A8C 45%,#1C2766);color:#fff;border-radius:32px;padding:clamp(30px,5vw,60px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center;box-shadow:var(--shadow-up)}
+.final::after{content:"";position:absolute;right:-120px;top:-160px;width:420px;height:420px;border-radius:50%;z-index:-1;background:radial-gradient(circle,rgba(224,86,47,.5),transparent 65%)}
+.final h2{font-size:clamp(1.8rem,3.6vw,2.6rem)}
+.final p{color:#D3D8F5;margin-top:10px;max-width:52ch}
+@media (max-width:760px){.final{grid-template-columns:minmax(0,1fr)}}
+footer{padding-block:32px;color:var(--muted);font-size:.92rem}
+footer .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
+</style>
+</head>
+<body>
+<header class="nav"><div class="wrap">
+ <a class="logo" href="./"><svg width="36" height="36" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="mk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4556B8"/><stop offset="1" stop-color="#1C2766"/></linearGradient></defs><rect width="48" height="48" rx="14" fill="url(#mk)"/><rect x="12" y="12" width="19" height="5" rx="2.5" fill="#fff"/><rect x="12" y="21.5" width="11" height="5" rx="2.5" fill="#fff" opacity=".85"/><rect x="12" y="31" width="19" height="5" rx="2.5" fill="#fff"/><path d="M26 25l4 4 8-9" fill="none" stroke="#FF8A63" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Eval<b>ux</b></span></a>
+ <span class="sp"></span><a class="l" href="#pruebe">Pruébelo</a><a class="l" href="#funciones">Funciones</a><a class="l" href="#preguntas">Preguntas</a><a class="l" href="./">Ingresar</a>
+ <a class="btn sm pri" data-contacto href="#contacto">Pedir una demostración</a>
+</div></header>
+
+<main>
+<div class="portada"><i class="blob b1"></i><i class="blob b2"></i><div class="wrap">
+ <div>
+  <span class="chipe">Exámenes en línea para su institución</span>
+  <h1>Exámenes que se califican solos</h1>
+  <p class="lead">Sus docentes arman el examen con selección múltiple, completar y relacionar. Sus estudiantes lo presentan a la misma hora desde el computador o el celular. La nota sale al entregar, sin trampa y sin papel.</p>
+  <div class="acts"><a class="btn pri" data-contacto href="#contacto">Pedir una demostración <svg class="fl" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn vid" href="#pruebe">Responder una pregunta de prueba</a></div>
+ </div>
+ <div class="escena" aria-hidden="true"><svg viewBox="0 0 220 240" class="escudo" aria-hidden="true"><defs><linearGradient id="gEsc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4556B8"/><stop offset="1" stop-color="#1C2766"/></linearGradient></defs><circle class="g1" cx="110" cy="120" r="104" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2" stroke-dasharray="4 10"/><circle class="g2" cx="110" cy="120" r="84" fill="none" stroke="rgba(224,86,47,.55)" stroke-width="2" stroke-dasharray="40 14"/><path d="M110 44 L166 64 V112 C166 150 142 174 110 188 C78 174 54 150 54 112 V64 Z" fill="url(#gEsc)" stroke="rgba(255,255,255,.35)" stroke-width="2"/><rect x="86" y="108" width="48" height="40" rx="8" fill="#fff"/><path d="M94 108 V96 a16 16 0 0 1 32 0 V108" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/><circle cx="110" cy="124" r="6" fill="#E0562F"/><rect x="107.5" y="126" width="5" height="12" rx="2.5" fill="#E0562F"/></svg>
+  <div class="flota f1"><i>✓</i><span><b>Examen entregado</b><small>Calificado al instante</small></span></div>
+  <div class="flota f2"><i>4,8</i><span><b>¡Aprobó!</b><small>Programación I</small></span></div>
+  <div class="flota f3"><i>32</i><span><b><span class="vivo"></span>Presentando ahora</b><small>Sala en vivo</small></span></div>
+ </div>
+</div></div>
+
+<section id="pruebe"><div class="wrap">
+ <div class="card prueba rv">
+  <div class="preg"><div class="tit"><span>Selección múltiple</span>Pruébelo como lo vería un estudiante</div><p class="q">En Python, ¿qué imprime la instrucción <code>print(7 // 2)</code>?</p>
+   <div class="opc" id="opc">
+    <button type="button" data-k="0" aria-pressed="false"><span>A</span>3.5</button>
+    <button type="button" data-k="1" aria-pressed="false"><span>B</span>3</button>
+    <button type="button" data-k="2" aria-pressed="false"><span>C</span>4</button>
+    <button type="button" data-k="3" aria-pressed="false"><span>D</span>1</button>
+   </div></div>
+  <div class="veredicto" id="ver" aria-live="polite"><p>Escoja una opción y aquí aparecerá su nota.</p></div>
+ </div>
+</div></section>
+
+<section><div class="wrap">
+ <div class="sec-h rv"><span class="chipo">Tres pantallas</span><h2>Cada persona ve solo lo que le toca</h2><p>Tres pantallas distintas para tres trabajos distintos.</p></div>
+ <div class="roles"><div class="card rol rv" style="--rc:var(--a1);--rs:var(--a1s)"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></span><h3>Administración</h3><ul><li>Registra docentes uno a uno o desde Excel.</li><li>Les asigna sus asignaturas.</li><li>Restringe o restablece cuentas con un clic.</li><li>Ve cifras de todo el sistema, sin exponer notas de estudiantes.</li><li>Pone el nombre, el logo y el color de la institución.</li></ul></div><div class="card rol rv" style="--rc:var(--a2);--rs:var(--a2s)"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></span><h3>Docentes</h3><ul><li>Crean grupos y cargan estudiantes desde Excel.</li><li>Arman exámenes con imágenes, o los importan desde Excel.</li><li>Vigilan la sala en vivo y dan tiempo extra.</li><li>Reciben reportes con evolución, riesgo y preguntas más falladas.</li><li>Al terminar el semestre, guardan copia y dejan todo limpio.</li></ul></div><div class="card rol rv" style="--rc:var(--a3);--rs:var(--a3s)"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c3 2 9 2 12 0v-5"/></svg></span><h3>Estudiantes</h3><ul><li>Entran con su correo y su código.</li><li>Presentan desde el computador o el celular.</li><li>Ven su nota al entregar y las respuestas al cerrar el examen.</li><li>Siguen su progreso frente al promedio del grupo.</li><li>Si se va el internet, sus respuestas no se pierden.</li></ul></div></div>
+</div></section>
+
+<section id="funciones"><div class="wrap">
+ <div class="sec-h rv"><span class="chipo">Funciones</span><h2>Lo que lo hace distinto</h2><p>Pensado para exámenes de verdad, con grupos grandes y conexiones que a veces fallan.</p></div>
+ <div class="funs"><div class="card fun rv"><span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg></span><div><h3>Califica en el servidor</h3><p>Las respuestas correctas nunca llegan al computador del estudiante. No hay forma de verlas desde el navegador.</p></div></div><div class="card fun rv"><span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18v12H3zM8 20h8M12 16v4"/></svg></span><div><h3>Contra la copia</h3><p>Pantalla completa, sin copiar ni pegar, marca de agua con el nombre del estudiante y aviso al docente si sale de la ventana.</p></div></div><div class="card fun rv"><span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M4 12h16M4 18h7M17 4l3 2-3 2"/></svg></span><div><h3>Orden distinto para cada uno</h3><p>Las preguntas, las opciones y las parejas salen en otro orden para cada estudiante.</p></div></div><div class="card fun rv"><span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 20h.01"/></svg></span><div><h3>Aguanta los cortes de internet</h3><p>Las respuestas se guardan en el equipo y se envían cuando vuelve la conexión.</p></div></div><div class="card fun rv"><span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v4H4zM4 11h16v4H4zM4 17h10"/></svg></span><div><h3>Tres tipos de pregunta</h3><p>Selección múltiple, completar (sin importar tildes ni mayúsculas) y relacionar con puntaje parcial por cada par.</p></div></div><div class="card fun rv"><span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5"/></svg></span><div><h3>Imágenes donde se necesiten</h3><p>En el enunciado, en cada opción y en cada par. Se reducen solas para que carguen rápido.</p></div></div><div class="card fun rv"><span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><div><h3>Reportes que dicen qué hacer</h3><p>Mapa de calor por estudiante, quiénes están en riesgo, cuadro de honor y qué opción escogieron en cada pregunta.</p></div></div><div class="card fun rv"><span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2"/></svg></span><div><h3>Tiempo extra y segunda oportunidad</h3><p>El docente da minutos a quien tuvo un problema, o habilita a quien salió por error.</p></div></div><div class="card fun rv"><span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></span><div><h3>Banco de preguntas</h3><p>Lo que el docente escribe una vez lo reutiliza en otros exámenes y semestres.</p></div></div><div class="card fun rv"><span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18v4H3zM4 8v12h16V8M10 12h4"/></svg></span><div><h3>Cierre de semestre ordenado</h3><p>Copia en Excel de todas las notas y limpieza del periodo en cuatro pasos.</p></div></div><div class="card fun rv"><span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5l8-2 8 2v16M9 21v-5h6v5"/></svg></span><div><h3>Con la marca de su institución</h3><p>Su nombre, su logo y su color en la pantalla de ingreso y en todo el sistema.</p></div></div><div class="card fun rv"><span class="n"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg></span><div><h3>Ayuda en cada pantalla</h3><p>Un botón de ayuda con las preguntas de cada persona y el contacto de soporte de su institución.</p></div></div></div>
+</div></section>
+
+<section id="preguntas"><div class="wrap">
+ <div class="sec-h rv"><span class="chipo">Preguntas frecuentes</span><h2>Lo que suelen preguntarnos</h2></div>
+ <div class="faq"><details class="rv"><summary>¿Hay que instalar algo en los computadores?<i>+</i></summary><p class="r">No. Evalux funciona en el navegador (Chrome, Edge o Firefox), en computador o celular.</p></details><details class="rv"><summary>¿Cuántos estudiantes pueden presentar al mismo tiempo?<i>+</i></summary><p class="r">Está pensado para grupos grandes que presentan a la misma hora. La calificación se hace en el servidor y las respuestas se guardan aunque falle el internet.</p></details><details class="rv"><summary>¿Qué pasa con los datos al terminar el semestre?<i>+</i></summary><p class="r">Cada docente descarga un Excel con todas las notas y luego limpia exámenes, grupos y cuentas del periodo. Su banco de preguntas se puede conservar.</p></details><details class="rv"><summary>¿Puede llevar el nombre y el logo de mi institución?<i>+</i></summary><p class="r">Sí. El administrador pone el nombre, el logo, el color y un contacto de ayuda. Se ven desde la pantalla de ingreso.</p></details></div>
+</div></section>
+
+<section><div class="wrap">
+ <div class="sec-h rv"><span class="chipo">Requisitos</span><h2>Lo que necesita para empezar</h2></div>
+ <div class="req">
+  <div class="card rv"><b>Un navegador</b><span>Chrome, Edge o Firefox, en computador o celular.</span></div>
+  <div class="card rv"><b>Correos de sus docentes</b><span>Con eso se crean sus cuentas; ellos cargan a sus estudiantes.</span></div>
+  <div class="card rv"><b>Un día de instalación</b><span>Con guía paso a paso y su dirección propia.</span></div>
+ </div>
+</div></section>
+
+<section id="contacto"><div class="wrap">
+ <div class="final rv"><div><h2>Véalo funcionando con sus propios exámenes</h2><p>Le mostramos Evalux en una llamada corta y lo dejamos listo con la marca de su institución.</p></div>
+  <a class="btn pri" data-contacto href="#">Escribir para pedir la demostración <svg class="fl" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+</div></section>
+</main>
+<footer><div class="wrap"><span>Evalux · exámenes en línea</span><a href="./">Ir a ingresar</a></div></footer>
+<script>
+// Cambie aquí el correo al que llegan las solicitudes de demostración
+const CONTACTO='fortalecer.company@gmail.com';
+document.querySelectorAll('[data-contacto]').forEach(a=>{if(a.getAttribute('href')==='#contacto')return;a.href='mailto:'+CONTACTO+'?subject='+encodeURIComponent('Quiero una demostración de Evalux')+'&body='+encodeURIComponent('Hola. Me interesa Evalux para mi institución.\n\nInstitución:\nCiudad:\nNúmero aproximado de docentes y estudiantes:\nTeléfono de contacto:')});
+const ver=document.getElementById('ver'),btns=[...document.querySelectorAll('#opc button')];
+btns.forEach(b=>b.onclick=()=>{const k=+b.dataset.k,bien=k===1;btns.forEach(x=>{x.classList.remove('bien','mal');x.setAttribute('aria-pressed',x===b)});
+ btns[1].classList.add('bien');if(!bien)b.classList.add('mal');
+ ver.innerHTML=`<div class="circulo"><svg viewBox="0 0 100 86" aria-hidden="true"><path d="M58 6C84 6 98 24 95 44c-3 22-26 37-50 36C20 79 3 64 5 42 7 20 28 6 52 8c10 1 18 4 24 8"/></svg><b>${bien?'5,0':'0,0'}</b></div><p>${bien?'Correcto: // divide y descarta los decimales.':'La correcta es B: // divide y descarta los decimales.'} Así de rápido ve su nota cada estudiante.</p>`});
+// Barra que cambia al bajar y tarjetas que aparecen al llegar a ellas
+const bajo=()=>document.documentElement.classList.toggle('bajo',scrollY>30);addEventListener('scroll',bajo,{passive:true});bajo();
+if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');io.unobserve(e.target)}}),{rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=(i%3)*70+'ms';io.observe(el)})}else document.querySelectorAll('.rv').forEach(el=>el.classList.add('vis'));
+</script>
+</body>
+</html>

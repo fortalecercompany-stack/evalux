@@ -1,5 +1,8 @@
 /* EVALUX · conexión con la base de datos (Supabase) */
-const CFG=window.EVALUX_CONFIG||{};
+const CFG=Object.assign({},window.EVALUX_CONFIG||{});
+// Arregla la dirección si se pegó con partes de más (/rest/v1/, espacios o la dirección del panel de Supabase)
+(function(){let u=String(CFG.SUPABASE_URL||'').trim();const m=u.match(/supabase\.com\/dashboard\/project\/([a-z0-9]+)/i);if(m)u='https://'+m[1]+'.supabase.co';
+ if(u&&!/^https?:\/\//i.test(u))u='https://'+u;try{if(u)u=new URL(u).origin}catch(_){}CFG.SUPABASE_URL=u;CFG.SUPABASE_ANON_KEY=String(CFG.SUPABASE_ANON_KEY||'').trim()})();
 const configurado=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&!/PEGUE|xxxx/i.test(CFG.SUPABASE_URL+CFG.SUPABASE_ANON_KEY));
 // La sesión se guarda solo en esta pestaña: al cerrar el navegador hay que volver a entrar.
 const CLAVE_SESION='evalux-sesion';
@@ -28,12 +31,19 @@ function aServidor(q){const b={tipo:q.tipo,valor:+q.valor||1,enunciado:q.enun||'
  if(q.tipo==='com')return{...b,respuestas:q.resp};
  return{...b,pares:q.pares.map((p,j)=>({a:p[0],b:p[1],img:q.parImgs[j]||''}))}}
 const aAviso=a=>({id:a.id,de:a.autor_id,autor:a.autor,para:a.para==='docentes'?'docentes':a.grupo_id,titulo:a.titulo,texto:a.texto,fecha:a.creado_en});
-const aIntento=i=>({id:i.id,estudiante:i.estudiante_id,estado:i.estado,respuestas:i.eval||i.respuestas||{},puntos:i.puntos||null,adv:i.advertencias,incidentes:(i.incidentes||[]).map(x=>[hora(x.h),x.t]),nota:i.nota==null?null:+i.nota,buenas:i.buenas,progreso:i.respondidas||0,entregado:i.entregado_en});
+const aIntento=i=>({id:i.id,estudiante:i.estudiante_id,estado:i.estado,respuestas:i.eval||i.respuestas||{},puntos:i.puntos||null,adv:i.advertencias,incidentes:(i.incidentes||[]).map(x=>[hora(x.h),x.t]),nota:i.nota==null?null:+i.nota,buenas:i.buenas,progreso:i.respondidas||0,entregado:i.entregado_en,extra:i.minutos_extra||0});
+
+/* ---------- Marca de la institución (nombre, color y logo) ---------- */
+function leerMarca(a){S.marca={institucion:a.institucion||'',color:a.color||'#2B3A8C',logo_url:a.logo_url||'',contacto:a.contacto||''};aplicarMarca()}
+function aplicarMarca(){const c=/^#[0-9a-f]{6}$/i.test(S.marca.color||'')?S.marca.color:'#2B3A8C';document.documentElement.style.setProperty('--brand-base',c);
+ const m=document.querySelector('meta[name=theme-color]');m&&m.setAttribute('content',c);document.title=S.marca.institucion?`Evalux · ${S.marca.institucion}`:'Evalux · Exámenes en línea'}
+// Antes de entrar: la pantalla de ingreso ya muestra la institución
+async function cargarMarca(){try{const r=await q(sb.from('ajustes').select('*').eq('id',1));if(r&&r[0])leerMarca(r[0])}catch(_){}}
 
 /* ---------- Cargar lo que necesita cada rol ---------- */
 async function cargarComun(){
  const [aj,facs,progs,avs,t]=await Promise.all([q(sb.from('ajustes').select('*').eq('id',1)),q(sb.from('facultades').select('*').order('orden')),todas(()=>sb.from('programas').select('*').order('nombre')),todas(()=>sb.from('avisos').select('*').order('creado_en',{ascending:false})),rpc('hora_servidor')]);
- const a=aj&&aj[0];if(a)S.cfg={periodo:a.periodo,aprueba:+a.aprueba,inactividad:a.inactividad,advertencias:a.advertencias,maxImgs:a.max_imgs};
+ const a=aj&&aj[0];if(a){S.cfg={periodo:a.periodo,aprueba:+a.aprueba,inactividad:a.inactividad,advertencias:a.advertencias,maxImgs:a.max_imgs};leerMarca(a)}
  S.FAC={};S.facId={};(facs||[]).forEach(f=>{S.FAC[f.nombre]=[];S.facId[f.nombre]=f.id});
  progs.forEach(p=>{const f=(facs||[]).find(x=>x.id===p.facultad_id);if(f)S.FAC[f.nombre].push(p.nombre)});
  S.avisos=avs.map(aAviso);
@@ -68,7 +78,7 @@ async function cargarEstudiante(){
  const me=S.yo.id;
  const [xs,gs,ge,pr]=await Promise.all([rpc('mis_examenes'),todas(()=>sb.from('grupos').select('*')),todas(()=>sb.from('grupo_estudiantes').select('*').eq('estudiante_id',me)),rpc('mi_progreso')]);
  S.grupos=gs.map(g=>({id:g.id,asig:g.asignatura,codigo:g.codigo,periodo:g.periodo,est:ge.some(x=>x.grupo_id===g.id)?[me]:[]}));
- S.examenes=(xs||[]).map(e=>({id:e.id,titulo:e.titulo,asig:e.asig,inst:e.inst||'',apertura:e.apertura,dur:e.dur,estado:'programado',n:e.n,docenteNombre:e.docente,grupos:[]}));
+ S.examenes=(xs||[]).map(e=>({id:e.id,titulo:e.titulo,asig:e.asig,inst:e.inst||'',apertura:e.apertura,dur:e.dur+(e.extra||0),durBase:e.dur,extra:e.extra||0,finTodos:e.fin_todos||null,estado:'programado',n:e.n,docenteNombre:e.docente,grupos:[]}));
  S.intentos={};(xs||[]).forEach(e=>{if(e.estado)S.intentos[e.id+'|'+me]={estado:e.estado,nota:e.nota==null?null:+e.nota,buenas:e.buenas,total:e.total}});
  S.progreso=(pr||[]).map(p=>({...p,nota:+p.nota,prom:p.prom==null?null:+p.prom}));
 }

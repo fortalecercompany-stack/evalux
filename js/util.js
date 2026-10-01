@@ -3,7 +3,7 @@ const S={role:null,yo:null,view:'inicio',pop:null,off:0,cargando:false,
  cfg:{periodo:'',aprueba:3.0,inactividad:20,advertencias:2,maxImgs:3},
  FAC:{},facId:{},docentes:[],resumen:null,actividad:[],
  estudiantes:[],grupos:[],examenes:[],intentos:{},banco:[],avisos:[],progreso:[],
- exFiltro:'todos',bFiltro:'',repGrupo:null,editor:null,leidos:new Set()};
+ exFiltro:'todos',bFiltro:'',repGrupo:null,editor:null,leidos:new Set(),marca:{institucion:'',color:'#2B3A8C',logo_url:'',contacto:''}};
 const SEDES=['Riohacha (principal)','Maicao','Fonseca','Villanueva','Manaure/Uribia'];
 const PAL=['var(--a1)','var(--a2)','var(--a3)','var(--a4)','var(--a5)','var(--coral)','var(--brand)'];
 const PALHEX=['#2F6FB7','#D0672A','#178A6E','#7048C8','#B83280','#E0562F','#2B3A8C'];
@@ -59,7 +59,7 @@ const closeModal=()=>$('#modal-root').innerHTML='';
 function confirmar(title,msg,okText,fn){modal({title,size:'sm',icon:['alert','cbad'],body:`<p>${msg}</p>`,foot:`<button class="btn" data-act="close">Cancelar</button><button class="btn pri" id="cf-ok">${esc(okText)}</button>`});$('#cf-ok').onclick=()=>{closeModal();fn()}}
 // Botón ocupado mientras se espera a la base de datos
 async function ocupado(btn,fn){if(btn){if(btn.dataset.busy)return;btn.dataset.busy='1';btn.setAttribute('aria-busy','true');btn.classList.add('busy')}
- try{return await fn()}catch(e){toast(mensaje(e),'alert');console.error(e)}finally{if(btn){delete btn.dataset.busy;btn.removeAttribute('aria-busy');btn.classList.remove('busy')}}}
+ try{return await fn()}catch(e){toast(mensaje(e),'alert');console.warn(e)}finally{if(btn){delete btn.dataset.busy;btn.removeAttribute('aria-busy');btn.classList.remove('busy')}}}
 function mensaje(e){const m=String((e&&e.message)||e||'');
  if(/Failed to fetch|NetworkError|Load failed/i.test(m))return 'No hay conexión con el servidor. Revise su internet e intente de nuevo.';
  if(/JWT|expired|session/i.test(m))return 'Su sesión venció. Salga y vuelva a entrar.';

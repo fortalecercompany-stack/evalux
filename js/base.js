@@ -40,19 +40,30 @@ const I={
  grid:['M4 4h7v7H4zM13 13h7v7h-7z','M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z'],
  save:['M5 4h11l3 3v13H5z','M5 4h11l3 3v13H5zM8 4v5h7V4M8 20v-6h8v6'],
  search:['M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13z','M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13zM21 21l-5.5-5.5'],
+ chevD:['','M6 9l6 6 6-6'],
+ help:['M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z','M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01'],
+ archive:['M4 8h16v12H4z','M3 4h18v4H3zM4 8v12h16V8M10 12h4'],
  sel:['M4 5h16v4H4z','M4 5h16v4H4zM4 11h16v4H4zM4 17h10M6.5 7h.01'],
  com:['M9 10h6v4H9z','M3 12h4M9 10h6v4H9zM17 12h4M3 18h10'],
  rel:['M3 5h6v4H3zM15 15h6v4h-6z','M3 5h6v4H3zM15 5h6v4h-6zM3 15h6v4H3zM15 15h6v4h-6zM9 7l6 10M9 17l6-10'],
 };
 const ic=(n,cls='')=>{const d=I[n]||I.spark;return `<svg class="ico ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d[0]?`<path d="${d[0]}" fill="currentColor" stroke="none" opacity=".2"/>`:''}<path d="${d[1]}"/></svg>`};
-const MARK=(s=36)=>`<svg width="${s}" height="${s}" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="mk${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4556B8"/><stop offset="1" stop-color="#1C2766"/></linearGradient></defs><rect width="48" height="48" rx="14" fill="url(#mk${s})"/><rect x="12" y="12" width="19" height="5" rx="2.5" fill="#fff"/><rect x="12" y="21.5" width="11" height="5" rx="2.5" fill="#fff" opacity=".85"/><rect x="12" y="31" width="19" height="5" rx="2.5" fill="#fff"/><path d="M26 25l4 4 8-9" fill="none" stroke="#FF8A63" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-const ESCUDO=`<svg viewBox="0 0 220 240" class="escudo" aria-hidden="true"><defs><linearGradient id="gEsc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4556B8"/><stop offset="1" stop-color="#1C2766"/></linearGradient></defs>
-<circle class="g1" cx="110" cy="120" r="104" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="2" stroke-dasharray="4 10"/><circle class="g2" cx="110" cy="120" r="84" fill="none" stroke="rgba(224,86,47,.5)" stroke-width="2" stroke-dasharray="40 14"/>
+const MARK=(s=36)=>`<svg width="${s}" height="${s}" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="mk${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:color-mix(in srgb,var(--brand-base) 75%,#fff)"/><stop offset="1" style="stop-color:color-mix(in srgb,var(--brand-base) 70%,#000)"/></linearGradient></defs><rect width="48" height="48" rx="14" fill="url(#mk${s})"/><rect x="12" y="12" width="19" height="5" rx="2.5" fill="#fff"/><rect x="12" y="21.5" width="11" height="5" rx="2.5" fill="#fff" opacity=".85"/><rect x="12" y="31" width="19" height="5" rx="2.5" fill="#fff"/><path d="M26 25l4 4 8-9" fill="none" stroke="#FF8A63" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+// El escudo con candado del ingreso (versión 1), con anillos que giran
+const ESCUDO=`<svg viewBox="0 0 220 240" class="escudo" aria-hidden="true"><defs><linearGradient id="gEsc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:color-mix(in srgb,var(--brand-base) 75%,#fff)"/><stop offset="1" style="stop-color:color-mix(in srgb,var(--brand-base) 65%,#000)"/></linearGradient></defs>
+<circle class="g1" cx="110" cy="120" r="104" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="2" stroke-dasharray="4 10"/><circle class="g2" cx="110" cy="120" r="84" fill="none" stroke="rgba(224,86,47,.55)" stroke-width="2" stroke-dasharray="40 14"/>
+<g class="g3"><circle cx="214" cy="120" r="5" fill="#FF9A7A"/></g>
 <path d="M110 44 L166 64 V112 C166 150 142 174 110 188 C78 174 54 150 54 112 V64 Z" fill="url(#gEsc)" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
-<rect x="86" y="108" width="48" height="40" rx="8" fill="#FFFFFF"/><path d="M94 108 V96 a16 16 0 0 1 32 0 V108" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/>
+<path class="brillo" d="M110 44 L166 64 V112 C166 150 142 174 110 188 C78 174 54 150 54 112 V64 Z" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+<rect x="86" y="108" width="48" height="40" rx="8" fill="#FFFFFF"/><path class="arco" d="M94 108 V96 a16 16 0 0 1 32 0 V108" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/>
 <circle cx="110" cy="124" r="6" fill="#E0562F"/><rect x="107.5" y="126" width="5" height="12" rx="2.5" fill="#E0562F"/></svg>`;
+const HOJA=ESCUDO;
+const TRAZO='';
+// La nota encerrada en rojo, como la marca un profesor
+const notaRoja=(n,size=120,sub='de 5,0',ok)=>`<span class="nota-roja" style="width:${size}px;height:${size*.86}px;--nz:${(size*.3).toFixed(0)}px" role="img" aria-label="Nota ${nota1(n)} ${sub}"><svg viewBox="0 0 100 86" aria-hidden="true"><path d="M58 6C84 6 98 24 95 44c-3 22-26 37-50 36C20 79 3 64 5 42 7 20 28 6 52 8c10 1 18 4 24 8"/></svg><span><b>${nota1(n)}</b>${sub?`<small>${sub}</small>`:''}</span></span>`;
 const heroArt=n=>`<div class="art" aria-hidden="true"><svg class="rings" viewBox="0 0 150 150"><circle cx="75" cy="75" r="72" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1.5" stroke-dasharray="3 8"/><circle cx="75" cy="75" r="56" fill="none" stroke="rgba(255,181,158,.5)" stroke-width="1.5" stroke-dasharray="30 10"/><circle cx="147" cy="75" r="4" fill="#FFB59E"/></svg><div class="gl">${ic(n)}</div></div>`;
-const hero=(eyebrow,title,sub,acts='',art='spark')=>`<section class="hero"><div style="min-width:0"><div class="eyebrow">${eyebrow}</div><h1 style="margin-top:8px">${title}</h1>${sub?`<p>${sub}</p>`:''}${acts?`<div class="acts">${acts}</div>`:''}</div>${heroArt(art)}</section>`;
+// Franja de color a todo lo ancho, con manchas de luz que se mueven (el borde en curva lo pone la hoja de estilos)
+const hero=(eyebrow,title,sub,acts='',art='spark')=>`<section class="hero"><i class="blob b1"></i><i class="blob b2"></i><div class="hero-in"><div class="hero-t">${eyebrow?`<span class="eyebrow">${eyebrow}</span>`:''}<h1>${title}</h1>${sub?`<p>${sub}</p>`:''}${acts?`<div class="acts">${acts}</div>`:''}</div>${heroArt(art)}</div></section>`;
 
 /* ================= Gráficos ================= */
 function ring(pct,color,size=120,stroke=12,label='',sub=''){const r=(size-stroke)/2,c=2*Math.PI*r,o=c*(1-Math.max(0,Math.min(1,pct)));

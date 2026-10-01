@@ -2,6 +2,13 @@
 const NAV={admin:[['inicio','Inicio','home'],['docentes','Docentes','users'],['facultades','Facultades','school'],['reportes','Reportes','chart'],['avisos','Avisos','mega'],['config','Configuración','gear']],
  docente:[['inicio','Inicio','home'],['grupos','Grupos','group'],['examenes','Exámenes','exam'],['banco','Banco','bank'],['reportes','Reportes','chart'],['avisos','Avisos','mega']],
  estudiante:[['inicio','Mis exámenes','exam'],['progreso','Mi progreso','trend'],['avisos','Avisos','mega']]};
+// Menú de escritorio: algunas secciones se agrupan en menús desplegables (estilo banca en línea)
+const NAVG={admin:[['inicio','Inicio','home'],['g-personas','Personas','users',[['docentes','Docentes','users','c1','Registrar, editar o restringir docentes'],['facultades','Facultades y programas','school','c3','La lista oficial de pregrado']]],['reportes','Reportes','chart'],['avisos','Avisos','mega'],['config','Configuración','gear']],
+ docente:[['inicio','Inicio','home'],['g-grupos','Grupos','group',[['grupos','Mis grupos','group','c1','Estudiantes por asignatura'],['cierre','Cerrar semestre','archive','cbad','Respaldo en Excel y limpieza del periodo']]],['g-examenes','Exámenes','exam',[['examenes','Mis exámenes','exam','c2','Programar, vigilar y calificar'],['banco','Banco de preguntas','bank','c4','Preguntas guardadas para reutilizar'],['@ex-new','Crear examen','plus','cc','Empezar uno nuevo ahora']]],['reportes','Reportes','chart'],['avisos','Avisos','mega']],
+ estudiante:NAV.estudiante};
+const ddHijo=([v,l,i,c,d])=>`<button class="dd-it" role="menuitem" ${v[0]==='@'?`data-act="${v.slice(1)}"`:`data-act="nav" data-v="${v}"`}><span class="chipi ${c}">${ic(i,'sm')}</span><span><b>${esc(l)}</b><small>${esc(d)}</small></span></button>`;
+function menuTabs(cur){return NAVG[S.role].map(([k,l,i,h])=>{if(!h)return `<button class="tab" data-act="nav" data-v="${k}" ${cur===k?'aria-current="page"':''}>${esc(l)}</button>`;
+ const act=h.some(x=>x[0]===cur);return `<div class="nv"><button class="tab" data-act="navdd" aria-haspopup="true" aria-expanded="false" ${act?'aria-current="page"':''}>${esc(l)}${ic('chevD','sm')}</button><div class="dd" role="menu"><div class="dd-in">${h.map(ddHijo).join('')}</div></div></div>`}).join('')+'<span class="ind" aria-hidden="true"></span>'}
 const doc=()=>aDocente(S.yo);
 const est=()=>aEstudiante(S.yo);
 function yo(){if(S.role==='admin')return{n:[S.yo.nombres,S.yo.apellidos].join(' ').trim(),r:'Administrador'};if(S.role==='docente'){const d=doc();return{n:d.nombres.split(' ')[0]+' '+d.apellidos.split(' ')[0],r:'Docente'}}const s=est();return{n:corto(s.nombre),r:'Estudiante · '+s.codigo}}
@@ -19,38 +26,58 @@ function render(){const app=$('#app');
  if(!S.role){app.innerHTML=vLogin();return}
  if(S.primer){app.innerHTML=vPrimer();return}
  if(S.exam){app.innerHTML=vExam();pintarMarca();return}
- const u=yo(),V={admin:{inicio:vAdminInicio,docentes:vDocentes,facultades:vFacultades,reportes:vAdminReportes,avisos:vAvisos,config:vConfig},docente:{inicio:vDocInicio,grupos:vGrupos,examenes:vExamenes,editor:vEditor,resultados:vResultados,sala:vSala,banco:vBanco,reportes:vDocReportes,avisos:vAvisos},estudiante:{inicio:vEstInicio,resultado:vEstResultado,revision:vRevision,progreso:vProgreso,avisos:vAvisos}};
- const cur=['editor','resultados','sala'].includes(S.view)?'examenes':['resultado','revision'].includes(S.view)?'inicio':S.view,nt=S.cargando?0:notifs().filter(x=>!S.leidos.has(x.id)).length;
+ const u=yo(),V={admin:{inicio:vAdminInicio,docentes:vDocentes,facultades:vFacultades,reportes:vAdminReportes,avisos:vAvisos,config:vConfig},docente:{inicio:vDocInicio,grupos:vGrupos,examenes:vExamenes,editor:vEditor,resultados:vResultados,sala:vSala,banco:vBanco,reportes:vDocReportes,avisos:vAvisos,cierre:vCierre},estudiante:{inicio:vEstInicio,resultado:vEstResultado,revision:vRevision,progreso:vProgreso,avisos:vAvisos}};
+ const cur=['editor','resultados','sala'].includes(S.view)?'examenes':['resultado','revision'].includes(S.view)?'inicio':S.view,curD=cur==='cierre'?'grupos':cur,nt=S.cargando?0:notifs().filter(x=>!S.leidos.has(x.id)).length;
  const vista=V[S.role][S.view]||V[S.role].inicio;
- app.innerHTML=`<header class="top"><div class="logo">${MARK(36)}<span>Eval<b>ux</b></span></div>
- <nav class="tabs" aria-label="Secciones">${NAV[S.role].map(([k,l,i])=>`<button data-act="nav" data-v="${k}" ${cur===k?'aria-current="page"':''}>${ic(i,'sm')}${esc(l)}</button>`).join('')}</nav><span class="spacer"></span>
+ app.innerHTML=`<header class="top"><div class="top-in"><button class="logo" data-act="nav" data-v="inicio" aria-label="Ir al inicio">${MARK(36)}<span>Eval<b>ux</b></span>${S.marca.institucion?`<span class="inst">${esc(S.marca.institucion)}</span>`:''}</button>
+ <nav class="tabs" aria-label="Secciones">${menuTabs(cur)}</nav><span class="spacer"></span>
  <button class="iconbtn" data-act="bell" aria-label="Notificaciones${nt?', '+nt+' sin leer':''}" aria-expanded="${S.pop==='bell'}">${ic('bell')}${nt?`<span class="dot">${nt}</span>`:''}</button>
- <button class="me" data-act="menu" aria-label="Menú de la cuenta" aria-expanded="${S.pop==='menu'}">${avatar(u.n)}<span style="text-align:left"><span class="n" style="display:block">${esc(u.n)}</span><span class="r">${esc(u.r)}</span></span></button>${S.pop?vPop():''}</header>
+ <button class="me" data-act="menu" aria-label="Menú de la cuenta" aria-expanded="${S.pop==='menu'}">${avatar(u.n)}<span style="text-align:left"><span class="n" style="display:block">${esc(u.n)}</span><span class="r">${esc(u.r)}</span></span></button>${S.pop&&S.pop!=='ayuda'?vPop():''}</div></header>
  <main id="main">${S.cargando?vCargando():vista()}</main>
- <nav class="dock" aria-label="Secciones">${NAV[S.role].map(([k,l,i])=>`<button data-act="nav" data-v="${k}" ${cur===k?'aria-current="page"':''}>${ic(i)}${esc(l)}</button>`).join('')}</nav>`;
+ <nav class="dock" aria-label="Secciones">${NAV[S.role].map(([k,l,i])=>`<button data-act="nav" data-v="${k}" ${curD===k?'aria-current="page"':''}>${ic(i)}${esc(l)}</button>`).join('')}</nav>
+ <button class="fab" data-act="ayuda" aria-expanded="${S.pop==='ayuda'}" aria-label="Ayuda rápida">${ic(S.pop==='ayuda'?'x':'help')}<span>Ayuda</span></button>${S.pop==='ayuda'?vAyuda():''}`;
  if(S.view==='editor'&&!S.cargando)actualizarResumen();
 }
-const vCargando=()=>`<section class="hero"><div style="min-width:0"><div class="eyebrow">Evalux</div><h1 style="margin-top:8px">Cargando…</h1><p>Trayendo su información.</p></div>${heroArt('clock')}</section><div class="bento">${[1,2,3,4].map(()=>'<div class="card tile s3 skel"></div>').join('')}<div class="card s12 skel" style="min-height:220px"></div></div>`;
-function vSinConexion(){return `<div class="login"><section class="hero">${ESCUDO}<div class="brand-big">${MARK(40)}<span>Eval<b>ux</b></span></div></section><section class="login-form"><div class="login-box"><div class="eyebrow">Falta un paso</div><h1>Falta conectar la base de datos</h1><p class="muted">Abra el archivo <b>config.js</b> y pegue la dirección y la llave publicable de su proyecto de Supabase, como indica la guía de instalación.</p></div></section></div>`}
+const vCargando=()=>`${hero('','Un momento…','Estamos trayendo su información.')}<div class="bento">${[1,2,3,4].map(()=>'<div class="card tile s3 skel"></div>').join('')}<div class="card s12 skel" style="min-height:220px"></div></div>`;
+function vSinConexion(){return `<div class="login">${ladoMarca()}<section class="login-form"><div class="login-box"><h1>Falta conectar la base de datos</h1><p class="muted">Abra el archivo <b>config.js</b> y pegue la dirección y la llave publicable de su proyecto de Supabase, como indica la guía de instalación.</p></div></section></div>`}
 function vPop(){if(S.pop==='menu'){const r=S.role;return `<div class="pop" role="menu"><div style="display:flex;gap:12px;align-items:center;padding:10px 12px">${avatar(yo().n,44)}<div style="min-width:0"><b>${esc(yo().n)}</b><div class="small muted" style="overflow-wrap:anywhere">${esc(S.yo.email)}</div></div></div>
  <button class="it" data-act="perfil" role="menuitem"><span class="chipi cb">${ic('user','sm')}</span><span><b>Mi perfil</b><br><span class="small muted">Sus datos${r!=='estudiante'?' y contraseña':''}</span></span></button>
  <button class="it" data-act="tema" role="menuitem"><span class="chipi c4">${ic('eye','sm')}</span><span><b>Cambiar tema</b><br><span class="small muted">Claro u oscuro</span></span></button>
  <button class="it" data-act="logout" role="menuitem"><span class="chipi cbad">${ic('logout','sm')}</span><span><b>Cerrar sesión</b><br><span class="small muted">También se cierra sola tras ${S.cfg.inactividad} min sin uso</span></span></button></div>`}
  const n=notifs();return `<div class="pop"><h4>Notificaciones</h4>${n.length?n.map(x=>`<button class="it" data-act="notif" data-go="${x.go}" data-ex="${x.ex||''}" data-id="${x.id}"><span class="chipi ${x.c}">${ic(x.icon,'sm')}</span><span style="min-width:0"><b>${esc(x.t)}</b><br><span class="small muted">${esc(x.s)}</span></span></button>`).join(''):'<p class="empty small">No tiene notificaciones.</p>'}</div>`}
+// Ayuda rápida: botón flotante con preguntas frecuentes que se despliegan
+const AYUDA={admin:[['¿Cómo registro a un docente?','En <b>Personas › Docentes</b> pulse <b>Registrar docente</b>, o cargue varios con Excel. Su contraseña inicial es su número de documento.','docentes'],
+ ['Un docente olvidó su contraseña','Búsquelo en Docentes y use <b>Restablecer contraseña</b>. Vuelve a ser su documento y al entrar crea una nueva.','docentes'],
+ ['¿Cómo pongo el nombre y el logo de mi institución?','En <b>Configuración › Su institución</b>. Se ve desde la pantalla de ingreso.','config'],
+ ['¿Por qué no veo las notas de los estudiantes?','Por privacidad, el administrador solo ve cifras generales. Cada docente ve las notas de sus grupos.','reportes']],
+ docente:[['¿Cómo creo y programo un examen?','En <b>Exámenes › Crear examen</b>. Escriba las preguntas o tráigalas del banco o de Excel, elija los grupos, la fecha y la duración, y pulse <b>Programar</b>.','examenes'],
+ ['Un estudiante necesita más tiempo','Abra los <b>Resultados</b> o la <b>Sala en vivo</b> del examen, toque al estudiante y use <b>Darle más tiempo</b>. Sirve aunque no haya entrado.','examenes'],
+ ['¿Cómo subo preguntas desde Excel?','En el editor del examen pulse <b>Importar desde Excel</b> y descargue la plantilla. Llénela y súbala.','examenes'],
+ ['Terminó el semestre, ¿qué hago?','En <b>Grupos › Cerrar semestre</b>: descargue el respaldo de notas y borre exámenes, grupos y estudiantes del periodo.','cierre']],
+ estudiante:[['¿Cuál es mi contraseña?','Su código estudiantil. No cambia.'],
+ ['Se fue el internet en pleno examen','Siga respondiendo: sus respuestas se guardan en el equipo y se envían cuando vuelva la conexión. Puede volver a entrar mientras no se acabe el tiempo.'],
+ ['¿Cuándo veo las respuestas correctas?','Su nota sale al entregar. Las respuestas correctas aparecen cuando termina el tiempo del examen para todos.'],
+ ['¿Qué pasa si salgo de la ventana del examen?','La primera vez sale una advertencia. La segunda, el examen se cierra. Solo su docente puede habilitarlo de nuevo.']]};
+function vAyuda(){const c=S.marca.contacto;return `<div class="ayuda-panel" role="dialog" aria-label="Ayuda rápida"><div class="ap-h"><b>¿En qué le ayudamos?</b><span class="small">Toque una pregunta para ver la respuesta.</span></div>
+ <div class="ap-b">${(AYUDA[S.role]||[]).map(([q,r,v],i)=>`<details class="acc"${i===0?' open':''}><summary>${q}${ic('chevD','sm')}</summary><div class="acc-b"><p>${r}</p>${v?`<button class="btn sm" data-act="nav" data-v="${v}">Ir allí ${ic('arrowR','sm')}</button>`:''}</div></details>`).join('')}</div>
+ ${c?`<div class="ap-f small">${ic('mega','sm')}<span>¿Necesita más ayuda? Escriba a <b>${esc(c)}</b></span></div>`:''}</div>`}
 function go(v,extra){Object.assign(S,extra||{});S.view=v;S.pop=null;render();window.scrollTo({top:0})}
 async function refrescar(v){try{await cargarTodo()}catch(e){toast(mensaje(e),'alert')}if(v)go(v);else render()}
 
 /* ---------- ingreso ---------- */
-function vLogin(){return `<div class="login"><section class="hero">${ESCUDO}<div class="brand-big">${MARK(40)}<span>Eval<b>ux</b></span></div><p class="small" style="color:rgba(255,255,255,.8);max-width:34ch;text-align:center">Exámenes en línea: selección múltiple, completar y relacionar.</p><div class="pasos"><span><i>1</i>Correo</span><span class="sep"></span><span><i>2</i>Contraseña</span><span class="sep"></span><span><i>${ic('check','sm')}</i>Ingresar</span></div></section>
- <section class="login-form"><form class="login-box" data-form="login" novalidate><div><div class="eyebrow">Bienvenido</div><h1 style="margin-top:6px">Ingresar</h1></div>
+// Lado izquierdo del ingreso: solo el escudo y el logo, sobre la franja de color que se mueve
+const ladoMarca=()=>`<section class="login-lado"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i>${ESCUDO}<div class="brand-big">${MARK(46)}<span>Eval<b>ux</b></span></div></section>`;
+function vLogin(){const m=S.marca;return `<div class="login">${ladoMarca()}
+ <section class="login-form"><form class="login-box" data-form="login" novalidate>${m.institucion||m.logo_url?`<div class="inst-row">${m.logo_url?`<img src="${esc(m.logo_url)}" alt="">`:''}${m.institucion?`<span>${esc(m.institucion)}</span>`:''}</div>`:''}<div><div class="eyebrow">Bienvenido</div><h1 style="margin-top:6px">Ingresar</h1></div>
   <label class="field"><span>Correo institucional</span><input type="email" id="lg-correo" autocomplete="username" placeholder="nombre@uniguajira.edu.co"></label>
   <div class="field"><label for="lg-clave" class="lbl">Contraseña</label><span class="pwd"><input type="password" id="lg-clave" autocomplete="current-password"><button type="button" class="iconbtn" data-act="ver-clave" aria-label="Mostrar contraseña">${ic('eye','sm')}</button></span></div>
   <p class="err" id="lg-err" role="alert" hidden></p>
-  <button class="btn pri" type="submit" id="lg-btn" style="min-height:50px">Ingresar ${ic('arrowR','sm')}</button>
+  <button class="btn pri big" type="submit" id="lg-btn">Ingresar ${ic('arrowR','sm')}</button>
   <button type="button" class="linkbtn small" data-act="olvide" style="align-self:flex-start">Olvidé mi contraseña</button>
-  <div class="card" style="padding:14px;display:flex;flex-direction:column;gap:8px;box-shadow:none;background:var(--surface-2)"><span class="lbl">¿Cuál es mi contraseña?</span>
+  <div class="card ayuda-login"><span class="lbl">¿Cuál es mi contraseña?</span>
    <div class="row small" style="flex-wrap:nowrap;align-items:flex-start;gap:10px"><span class="chipi c3">${ic('exam','sm')}</span><span><b>Estudiantes:</b> su código estudiantil.</span></div>
-   <div class="row small" style="flex-wrap:nowrap;align-items:flex-start;gap:10px"><span class="chipi c1">${ic('edit','sm')}</span><span><b>Docentes:</b> la primera vez, su número de documento. Luego, la que usted creó.</span></div></div>
+   <div class="row small" style="flex-wrap:nowrap;align-items:flex-start;gap:10px"><span class="chipi c1">${ic('edit','sm')}</span><span><b>Docentes:</b> la primera vez, su número de documento. Luego, la que usted creó.</span></div>${m.contacto?`<div class="row small" style="flex-wrap:nowrap;align-items:flex-start;gap:10px"><span class="chipi cc">${ic('mega','sm')}</span><span>¿No logra entrar? Escriba a <b>${esc(m.contacto)}</b>.</span></div>`:''}</div>
+  <a class="conozca" href="presentacion.html">Conozca Evalux para su institución ${ic('arrowR','sm')}</a>
  </form></section></div>`}
 async function login(){const c=$('#lg-correo').value.trim().toLowerCase(),k=$('#lg-clave').value,e=$('#lg-err'),fail=m=>{e.textContent=m;e.hidden=false};
  if(!c||!k)return fail('Escriba su correo y su contraseña.');
@@ -68,8 +95,8 @@ function olvide(){modal({title:'Recuperar la contraseña',size:'sm',icon:['key',
  <li><span class="chipi c3">${ic('exam','sm')}</span><span><b>Estudiantes:</b> su contraseña es su <b>código estudiantil</b> y no cambia. Si no entra, revise con su docente que su correo y código estén bien escritos.</span></li>
  <li><span class="chipi c1">${ic('edit','sm')}</span><span><b>Docentes:</b> pida al administrador de Evalux que <b>restablezca su contraseña</b>. Volverá a ser su número de documento y al entrar creará una nueva.</span></li></ul>`,foot:'<button class="btn pri" data-act="close">Entendido</button>'})}
 function reglas(p,docu){return [[p.length>=8,'Al menos 8 caracteres'],[/[a-záéíóúñ]/i.test(p)&&/\d/.test(p),'Letras y números'],[p!==docu&&p.length>0,'Diferente a su documento']]}
-function vPrimer(){const d=doc();return `<div class="login"><section class="hero">${ESCUDO}<div class="brand-big">${MARK(40)}<span>Eval<b>ux</b></span></div></section><section class="login-form"><form class="login-box" data-form="primer" novalidate>
- <div><div class="eyebrow">Primer ingreso</div><h1 style="margin-top:6px">Bienvenido(a), ${esc(d.nombres.split(' ')[0])}</h1><p class="muted" style="margin-top:8px">Entró con la contraseña inicial, que es su número de documento. Para proteger su cuenta, cree ahora una contraseña propia.</p></div>
+function vPrimer(){const d=doc();return `<div class="login">${ladoMarca()}<section class="login-form"><form class="login-box" data-form="primer" novalidate>
+ <div><h1>Bienvenido(a), ${esc(d.nombres.split(' ')[0])}</h1><p class="muted" style="margin-top:8px">Entró con la contraseña inicial, que es su número de documento. Para proteger su cuenta, cree ahora una contraseña propia.</p></div>
  <div class="field"><label for="pc-1" class="lbl">Contraseña nueva</label><input type="password" id="pc-1" autocomplete="new-password"></div><div class="meter" aria-hidden="true"><i id="pc-m" style="width:0"></i></div><div id="pc-r" style="display:flex;flex-direction:column;gap:4px"></div>
  <div class="field"><label for="pc-2" class="lbl">Repita la contraseña</label><input type="password" id="pc-2" autocomplete="new-password"></div><p class="err" id="pc-err" role="alert" hidden></p>
  <button class="btn pri" type="submit" id="pc-btn" style="min-height:50px">Guardar y entrar</button><button class="linkbtn small" type="button" data-act="logout" style="align-self:flex-start">Salir</button></form></section></div>`}
@@ -142,7 +169,7 @@ function imgSrc(key){const t=key[0],[i,j]=key.slice(1).split('-').map(Number),q=
 let ultimo=Date.now();
 document.addEventListener('click',ev=>{ultimo=Date.now();
  const t=ev.target.closest('[data-act]');
- if(S.pop&&!ev.target.closest('.pop')&&!(t&&['bell','menu'].includes(t.dataset.act))){S.pop=null;render();if(!t)return}
+ if(S.pop&&!ev.target.closest('.pop')&&!ev.target.closest('.ayuda-panel')&&!(t&&['bell','menu','ayuda'].includes(t.dataset.act))){S.pop=null;render();if(!t)return}
  if(!t)return;const a=t.dataset.act,id=t.dataset.id;
  if(t.getAttribute('aria-disabled')==='true'){ev.preventDefault();return}
  if(a==='modal-bg'){if(ev.target===t&&!closeModal.bloq)closeModal();return}
@@ -154,6 +181,8 @@ document.addEventListener('click',ev=>{ultimo=Date.now();
   logout:()=>salir('Sesión cerrada'),
   nav:()=>{if(S.view==='editor'&&S.editorSucio&&t.dataset.v!=='editor'){confirmar('Salir sin guardar','Tiene cambios sin guardar en el examen. ¿Salir de todas formas?','Salir',()=>{S.editor=null;S.editorSucio=false;go(t.dataset.v)});return}go(t.dataset.v)},
   'ed-volver':()=>{if(S.editorSucio){confirmar('Salir sin guardar','Tiene cambios sin guardar en el examen. ¿Salir de todas formas?','Salir',()=>{S.editor=null;S.editorSucio=false;go('examenes')});return}S.editor=null;go('examenes')},
+  ayuda:()=>{S.pop=S.pop==='ayuda'?null:'ayuda';render()},
+  navdd:()=>{const n=t.closest('.nv'),ab=!n.classList.contains('open');document.querySelectorAll('.nv.open').forEach(x=>{x.classList.remove('open');x.firstElementChild.setAttribute('aria-expanded','false')});if(ab){n.classList.add('open');t.setAttribute('aria-expanded','true')}},
   bell:()=>{S.pop=S.pop==='bell'?null:'bell';if(S.pop){notifs().forEach(n=>S.leidos.add(n.id));guardarLeidos()}render()},menu:()=>{S.pop=S.pop==='menu'?null:'menu';render()},
   notif:()=>{if(t.dataset.go==='sala')abrirSala(t.dataset.ex);else go(t.dataset.go)},
   perfil:()=>{S.pop=null;render();perfil()},
@@ -182,6 +211,11 @@ document.addEventListener('click',ev=>{ultimo=Date.now();
   'ex-res':()=>go('resultados',{exSel:id}),'ex-sala':()=>abrirSala(id),'sala-act':()=>ocupado(t,async()=>{await cargarIntentosDe(S.exSel);render()}),
   seat:()=>detalleSeat(id),'rep-g':()=>go('reportes',{repGrupo:id}),
   rehab:()=>rehabilitar(id,t),
+  'dar-tiempo':()=>darTiempo(id,t),'ex-del-notas':()=>borrarConNotas(id),
+  'ci-respaldo':()=>{respaldoPeriodo(S.cierre.periodo);S.cierre.respaldo=true;render()},'ci-borrar':()=>cerrarSemestre(t),
+  'q-xls':abrirImportarPreguntas,'qx-plantilla':plantillaPreguntas,'qx-go':agregarImportadas,
+  color:()=>{S.marca.color=t.dataset.v;aplicarMarca();document.querySelectorAll('.swatches button').forEach(b=>b.setAttribute('aria-pressed',b===t))},
+  'logo-del':()=>{S.marca.institucion=$('#cf-inst').value;S.marca.contacto=$('#cf-contacto').value;S.marca.logo_url='';render();toast('Logo quitado. Pulse Guardar configuración para confirmar.','image')},
   'b-filtro':()=>{S.bFiltro=t.dataset.v;go('banco')},'b-ver':()=>vistaPrevia(S.banco.find(b=>b.id===id)),
   'b-del':()=>confirmar('Quitar del banco','¿Quitar esta pregunta del banco? Los exámenes que ya la usan no cambian.','Quitar',()=>ocupado(null,async()=>{await q(sb.from('banco').delete().eq('id',id));await refrescar('banco');toast('Pregunta quitada del banco','trash')})),
   'bk-open':traerBanco,
@@ -235,6 +269,11 @@ document.addEventListener('change',ev=>{const t=ev.target;
  if(t.id==='fd-fac')$('#fd-prog').innerHTML=optsProg(t.value);
  if(t.id==='fe-prog')$('#fe-fac').textContent='Facultad: '+facDe(t.value);
  if(t.id==='bulk-file'&&t.files[0])leerArchivo(t.files[0]);
+ if(t.id==='qx-file'&&t.files[0])leerPreguntas(t.files[0]);
+ if(t.id==='ci-per'){S.cierre={periodo:t.value,res:null,respaldo:false,banco:false};render()}
+ if(t.id==='ci-sin'){S.cierre.respaldo=t.checked;render()}
+ if(t.id==='ci-banco')S.cierre.banco=t.checked;
+ if(t.id==='cf-logo'&&t.files[0]){const f=t.files[0];S.marca.institucion=$('#cf-inst').value;S.marca.contacto=$('#cf-contacto').value;ocupado(null,async()=>{toast('Subiendo logo…','upload');S.marca.logo_url=await subirImagen(f);render();toast('Logo listo. Pulse Guardar configuración para confirmar.','image')})}
  const E=S.editor;if(E&&S.view==='editor'&&S.role==='docente'){if(t.id==='ed-asig'){E.asig=t.value;E.grupos=[];S.editorSucio=true;render();return}if(t.dataset.grp){const g=t.dataset.grp;E.grupos=t.checked?[...E.grupos,g]:E.grupos.filter(x=>x!==g);S.editorSucio=true;actualizarResumen()}
   if(t.dataset.okset!=null){E.preg[+t.dataset.q].ok=+t.dataset.okset;S.editorSucio=true;render()}
   if(t.dataset.img!=null&&t.files.length){const q0=E.preg[+t.dataset.img],fs=[...t.files].slice(0,S.cfg.maxImgs-q0.imgs.length);S.editorSucio=true;subirImgs(fs,src=>{q0.imgs.push(src);render()}).then(n=>n&&toast(n>1?'Imágenes agregadas':'Imagen agregada','image'))}
@@ -262,4 +301,4 @@ setInterval(()=>{if(S.exam&&S.exam.fase==='examen')enviarRespuestas()},30000);
 /* ---------- arranque ---------- */
 (async function(){try{const t=localStorage.getItem('evalux-tema');if(t)document.documentElement.dataset.theme=t}catch(_){}
  if(!configurado){render();return}
- render();try{await iniciarSesion()}catch(e){console.error(e);render()}})();
+ await cargarMarca();render();try{await iniciarSesion()}catch(e){console.error(e);render()}})();
